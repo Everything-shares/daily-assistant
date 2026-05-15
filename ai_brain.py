@@ -3,15 +3,20 @@
 
 import os
 import google.generativeai as genai
+import streamlit as st
 from dotenv import load_dotenv
 from storage import load_data
 
-# Load your secret API key from the .env file
-load_dotenv()
+# Load API key — works both locally and on Streamlit Cloud
+load_dotenv()  # for local .env file
 
-# Connect to Gemini using your API key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Try Streamlit secrets first (cloud), then fall back to .env (local)
+try:
+    api_key = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    api_key = os.getenv("GEMINI_API_KEY")
 
+genai.configure(api_key=api_key)
 # Choose the Gemini model to use
 MODEL = "gemini-2.5-flash"  # Free, fast, and very capable ✅
 
